@@ -1,0 +1,74 @@
+#PLAYBOOK FOR INSTALLING ELASTIC STACK
+---
+
+- hosts: all
+  become: true
+  pre_tasks:
+
+  - name: Installing epel-release
+    yum:
+      name:
+        - epel-release
+    when: ansible_distribution == "CentOS"
+
+  - name: Update and upgrade remote CentOS server
+    yum:
+      update_cache: yes
+      update_only: yes
+      state: latest
+    when: ansible_distribution == "CentOS"
+
+  - name: Installing dependencies
+    apt:
+      name:
+        - wget
+      state: latest
+    when: ansible_distribution == "Ubuntu"
+  
+  - name: Dpkg fixing in Ubuntu Servers
+    shell: |
+      dpkg --configure -a
+    when: ansible_distribution == "Ubuntu"
+# ELK Centos
+- hosts: elk_centos
+  tags: elk_centos, elk_both 
+  become: true
+  roles:
+    - elk_centos
+# ELK Ubuntu
+- hosts: elk_ubuntu
+  tags: elk_ubuntu, elk_both
+  become: true
+  roles:
+    - elk_ubuntu
+
+# Nagios Centos
+- hosts: nagios_centos
+  tags: nagios_centos
+  become: true
+  roles:
+    - nagios_centos
+# IGP Centos
+- hosts: igp_centos
+  tags: igp_centos, igp_both
+  become: true
+  roles: 
+    - igp_centos
+# IGP Ubuntu
+- hosts: igp_ubuntu
+  tags: igp_ubuntu, igp_both
+  become: true
+  roles: 
+    - igp_ubuntu
+# The Lamp Stack of Centos
+- hosts: ls_centos
+  tags: ls_centos, ls_both
+  become: true
+  roles: 
+    - ls_centos
+#The  Lamp Stack of Ubuntu
+- hosts: ls_ubuntu
+  tags: ls_ubuntu, ls_both
+  become: true
+  roles: 
+    - ls_ubuntu
